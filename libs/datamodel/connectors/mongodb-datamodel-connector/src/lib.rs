@@ -22,6 +22,7 @@ const CAPABILITIES: &[ConnectorCapability] = &[
     ConnectorCapability::ScalarLists,
     ConnectorCapability::InsensitiveFilters,
     ConnectorCapability::CompositeTypes,
+    ConnectorCapability::QueryRaw,
 ];
 
 type Result<T> = std::result::Result<T, ConnectorError>;
