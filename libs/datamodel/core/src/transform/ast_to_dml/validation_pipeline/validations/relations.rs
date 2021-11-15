@@ -196,10 +196,10 @@ pub(super) fn cycles<'ast, 'db>(
     if !db
         .active_connector()
         .has_capability(ConnectorCapability::ReferenceCycleDetection)
-        || db
+        && db
             .datasource()
-            .map(|ds| ds.referential_integrity().is_prisma())
-            .unwrap_or(false)
+            .map(|ds| ds.referential_integrity().uses_foreign_keys())
+            .unwrap_or(true)
     {
         return;
     }
