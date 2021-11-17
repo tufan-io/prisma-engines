@@ -161,6 +161,7 @@ pub(crate) fn calculate_index(index: &Index, ctx: &IntrospectionContext) -> Inde
             .collect(),
         tpe,
         defined_on_field: index.columns.len() == 1,
+        using: None,
     }
 }
 

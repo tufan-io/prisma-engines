@@ -1,6 +1,7 @@
 use datamodel_connector::ConnectorCapability;
 
 use crate::ast::Span;
+use crate::transform::ast_to_dml::db::IndexAlgorithm;
 use crate::{
     common::preview_features::PreviewFeature,
     diagnostics::{DatamodelError, Diagnostics},
@@ -86,6 +87,30 @@ pub(crate) fn field_length_prefix_supported(
             index.attribute_name(),
             span,
         ));
+    }
+}
+
+/// Is `Hash` supported as `type`
+pub(crate) fn index_algorithm_is_supported(
+    db: &ParserDatabase<'_>,
+    index: IndexWalker<'_, '_>,
+    diagnostics: &mut Diagnostics,
+) {
+    if db
+        .active_connector()
+        .has_capability(ConnectorCapability::UsingHashIndex)
+    {
+        return;
+    }
+
+    if let Some(IndexAlgorithm::Hash) = index.attribute().using {
+        let message = "The given type argument is not supported with the current connector";
+        let span = index
+            .ast_attribute()
+            .and_then(|i| i.span_for_argument("type"))
+            .unwrap_or_else(Span::empty);
+
+        diagnostics.push_error(DatamodelError::new_attribute_validation_error(message, "index", span));
     }
 }
 
